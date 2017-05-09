@@ -19,6 +19,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -43,7 +44,7 @@ import static com.afollestad.materialcamera.internal.BaseCaptureActivity.FLASH_M
 /**
  * @author Aidan Follestad (afollestad)
  */
-abstract class BaseCameraFragment extends Fragment implements CameraUriInterface, View.OnClickListener {
+abstract class BaseCameraFragment extends Fragment implements CameraUriInterface, View.OnClickListener, View.OnLongClickListener, View.OnTouchListener {
 
     protected ImageButton mButtonVideo;
     protected ImageButton mButtonStillshot;
@@ -123,7 +124,12 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
         mButtonFlash = (ImageButton) view.findViewById(R.id.flash);
         setupFlashMode();
 
-        mButtonVideo.setOnClickListener(this);
+        if (mInterface.holdToRecord()) {
+            mButtonVideo.setOnLongClickListener(this);
+            mButtonVideo.setOnTouchListener(this);
+        } else {
+            mButtonVideo.setOnClickListener(this);
+        }
         mButtonStillshot.setOnClickListener(this);
         mButtonFacing.setOnClickListener(this);
         mButtonFlash.setOnClickListener(this);
@@ -379,6 +385,43 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
         }
     }
 
+    private void activateRecordingVideo() {
+        if (getArguments().getBoolean(CameraIntentKey.SHOW_PORTRAIT_WARNING, true) &&
+                Degrees.isPortrait(getActivity())) {
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.mcam_portrait)
+                    .content(R.string.mcam_portrait_warning)
+                    .positiveText(R.string.mcam_yes)
+                    .negativeText(android.R.string.cancel)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
+                            mIsRecording = startRecordingVideo();
+                        }
+                    })
+                    .show();
+        } else {
+            mIsRecording = startRecordingVideo();
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        activateRecordingVideo();
+        return true;
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            if (mIsRecording) {
+                stopRecordingVideo(false);
+                mIsRecording = false;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void onClick(View view) {
         final int id = view.getId();
@@ -394,23 +437,7 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
                 stopRecordingVideo(false);
                 mIsRecording = false;
             } else {
-                if (getArguments().getBoolean(CameraIntentKey.SHOW_PORTRAIT_WARNING, true) &&
-                        Degrees.isPortrait(getActivity())) {
-                    new MaterialDialog.Builder(getActivity())
-                            .title(R.string.mcam_portrait)
-                            .content(R.string.mcam_portrait_warning)
-                            .positiveText(R.string.mcam_yes)
-                            .negativeText(android.R.string.cancel)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog materialDialog, @NonNull DialogAction dialogAction) {
-                                    mIsRecording = startRecordingVideo();
-                                }
-                            })
-                            .show();
-                } else {
-                    mIsRecording = startRecordingVideo();
-                }
+                activateRecordingVideo();
             }
         } else if (id == R.id.stillshot) {
             takeStillshot();

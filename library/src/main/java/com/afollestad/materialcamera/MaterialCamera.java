@@ -67,6 +67,7 @@ public class MaterialCamera {
     private boolean mForceCamera1 = false;
     private boolean mStillShot;
     private boolean mAudioDisabled = false;
+    private boolean mHoldToRecord = false;
     private long mAutoRecord = -1;
 
     private int mVideoEncodingBitRate = -1;
@@ -198,6 +199,13 @@ public class MaterialCamera {
 
     public MaterialCamera audioDisabled(boolean disabled) {
         mAudioDisabled = disabled;
+        return this;
+    }
+
+    public MaterialCamera holdToRecord(boolean holdRecord) {
+        if (!mStillShot) {
+            mHoldToRecord = holdRecord;
+        }
         return this;
     }
 
@@ -350,6 +358,9 @@ public class MaterialCamera {
             intent.putExtra(CameraIntentKey.MAX_ALLOWED_FILE_SIZE, mMaxFileSize);
         if (mQualityProfile > -1)
             intent.putExtra(CameraIntentKey.QUALITY_PROFILE, mQualityProfile);
+        if (mHoldToRecord) {
+            intent.putExtra(CameraIntentKey.HOLD_TO_RECORD, mHoldToRecord);
+        }
 
         if (mIconRecord != 0)
             intent.putExtra(CameraIntentKey.ICON_RECORD, mIconRecord);

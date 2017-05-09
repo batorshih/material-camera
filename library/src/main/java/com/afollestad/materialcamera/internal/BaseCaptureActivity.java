@@ -368,6 +368,11 @@ public abstract class BaseCaptureActivity extends AppCompatActivity implements B
         return getIntent().getBooleanExtra(CameraIntentKey.AUTO_SUBMIT, false);
     }
 
+    @Override
+    public final boolean holdToRecord() {
+        return getIntent().getBooleanExtra(CameraIntentKey.HOLD_TO_RECORD, false);
+    }
+
     private void deleteOutputFile(@Nullable String uri) {
         if (uri != null)
             //noinspection ResultOfMethodCallIgnored
