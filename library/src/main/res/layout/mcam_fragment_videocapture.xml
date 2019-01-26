@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -51,18 +52,28 @@
             android:visibility="gone"
             tools:ignore="ContentDescription"
             tools:src="@drawable/mcam_action_flash" />
-
-        <ImageButton
-            android:id="@+id/video"
-            android:layout_width="@dimen/mcam_action_icon_size"
-            android:layout_height="@dimen/mcam_action_icon_size"
+        <RelativeLayout
+            android:layout_width="@dimen/main_circle_button"
+            android:layout_height="@dimen/main_circle_button"
             android:layout_centerInParent="true"
-            android:layout_gravity="center"
-            android:background="@drawable/mcam_circle_selector"
-            android:padding="@dimen/mcam_content_inset_less"
-            android:scaleType="fitXY"
-            tools:ignore="ContentDescription"
-            tools:src="@drawable/mcam_action_capture" />
+            android:layout_gravity="center">
+            <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                android:id="@+id/innerButtonProgress"
+                app:cpb_background_progressbar_color="#00FFFFFF"
+                app:cpb_background_progressbar_width="5dp"
+                app:cpb_progressbar_color="#F44336"
+                app:cpb_progressbar_width="5dp"
+                android:layout_width="@dimen/main_circle_button"
+                android:layout_height="@dimen/main_circle_button" />
+            <ImageButton
+                android:id="@+id/video"
+                android:layout_width="@dimen/main_circle_button"
+                android:layout_height="@dimen/main_circle_button"
+                android:background="@drawable/mcam_circle_selector"
+                android:scaleType="fitXY"
+                tools:ignore="ContentDescription"
+                tools:src="@drawable/mcam_action_capture" />
+        </RelativeLayout>
 
         <ImageButton
             android:id="@+id/stillshot"

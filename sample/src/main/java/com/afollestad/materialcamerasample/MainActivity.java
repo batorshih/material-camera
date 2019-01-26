@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -66,13 +67,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         MaterialCamera materialCamera = new MaterialCamera(this)
                 .saveDir(saveDir)
-                .showPortraitWarning(true)
+                .showPortraitWarning(false)
                 .allowRetry(true)
                 .defaultToFrontFacing(true)
                 .allowRetry(true)
                 .autoSubmit(false)
+                .holdToRecord(true)
                 .labelConfirm(R.string.mcam_use_video);
-
+        Log.d("xaxa","end yumu");
         if (view.getId() == R.id.launchCameraStillshot)
             materialCamera
                     .stillShot() // launches the Camera in stillshot mode

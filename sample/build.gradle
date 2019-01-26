@@ -2,9 +2,9 @@ apply plugin: 'com.android.application'
 
 ext {
     PUBLISH_VERSION = "0.4.4"
-    TARGET_SDK = 25
-    BUILD_TOOLS = "24.0.3"
-    GOOGLE_LIBS = "25.0.0"
+    TARGET_SDK = 28
+    BUILD_TOOLS = "28.0.3"
+    GOOGLE_LIBS = "28.0.0"
 }
 
 android {
@@ -36,6 +36,9 @@ repositories {
 }
 
 dependencies {
-    compile project(':library')
-    compile "com.android.support:appcompat-v7:$GOOGLE_LIBS"
+    configurations {
+        all*.exclude group: 'com.android.support', module: 'support-v13'
+    }
+    implementation project(':library')
+    implementation "com.android.support:appcompat-v7:$GOOGLE_LIBS"
 }

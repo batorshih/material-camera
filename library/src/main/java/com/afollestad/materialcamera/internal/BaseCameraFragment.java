@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.media.MediaRecorder;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.afollestad.materialcamera.MaterialCamera;
@@ -32,8 +34,11 @@ import com.afollestad.materialcamera.util.CameraUtil;
 import com.afollestad.materialcamera.util.Degrees;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
 import java.io.File;
+
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static com.afollestad.materialcamera.internal.BaseCaptureActivity.CAMERA_POSITION_BACK;
@@ -58,6 +63,7 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
     protected BaseCaptureInterface mInterface;
     protected Handler mPositionHandler;
     protected MediaRecorder mMediaRecorder;
+    protected CircularProgressBar innerButtonProgress;
     private int mIconTextColor;
 
     protected static void LOG(Object context, String message) {
@@ -79,6 +85,8 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
                 } else {
                     final long diff = mRecordEnd - now;
                     mRecordDuration.setText(String.format("-%s", CameraUtil.getDurationString(diff)));
+                    Log.d("xaxa",""+diff);
+                    innerButtonProgress.setProgress(5);
                 }
             } else {
                 mRecordDuration.setText(CameraUtil.getDurationString(now - mRecordStart));
@@ -108,7 +116,7 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        innerButtonProgress = view.findViewById(R.id.innerButtonProgress);
         mDelayStartCountdown = (TextView) view.findViewById(R.id.delayStartCountdown);
         mButtonVideo = (ImageButton) view.findViewById(R.id.video);
         mButtonStillshot = (ImageButton) view.findViewById(R.id.stillshot);
@@ -167,6 +175,8 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
         } else {
             mDelayStartCountdown.setText(Long.toString(mInterface.autoRecordDelay() / 1000));
         }
+        innerButtonProgress.setProgressMax(30.0f);
+
     }
 
     protected void onFlashModesLoaded() {
@@ -407,6 +417,8 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
 
     @Override
     public boolean onLongClick(View view) {
+        Log.d("xaxa","progress...");
+        innerButtonProgress.setProgressWithAnimation(30.0f, 30000);
         activateRecordingVideo();
         return true;
     }
@@ -437,6 +449,7 @@ abstract class BaseCameraFragment extends Fragment implements CameraUriInterface
                 stopRecordingVideo(false);
                 mIsRecording = false;
             } else {
+
                 activateRecordingVideo();
             }
         } else if (id == R.id.stillshot) {
